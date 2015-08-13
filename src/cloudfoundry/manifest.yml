@@ -1,0 +1,8 @@
+---
+applications:
+- name: hdfs-broker
+  memory: 512M
+  instances: 1
+  path: target/hdfs-broker-${version}.jar
+  env:
+    SPRING_PROFILES_ACTIVE: "cloud"
