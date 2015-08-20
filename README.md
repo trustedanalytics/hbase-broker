@@ -28,6 +28,7 @@ Broker configuration params list (environment properties):
   * KRB_REALM - kerberos realm name
 * optional :
   * BASE_GUID - base id for catalog plan creation (uuid)
+  * HADOOP_PROVIDED_PARAMS - list of hbase configuration parameters exposed by service (json format, default: {})
   * CF_CATALOG_SERVICENAME - service name in cloud foundry catalog (default: hbase)
   * CF_CATALOG_SERVICEID - service id in cloud foundry catalog (default: hbase)
   * ZK_BRK_SPACE - (default: /zkbrk_space)
