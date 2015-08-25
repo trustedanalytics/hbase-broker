@@ -1,8 +1,17 @@
 ---
 applications:
-- name: hdfs-broker
+- name: hbase-broker
   memory: 512M
   instances: 1
-  path: target/hdfs-broker-${version}.jar
+  host: hbase-broker
+  path: target/hbase-broker-${version}.jar
   env:
     SPRING_PROFILES_ACTIVE: "cloud"
+    USER_PASSWORD: "placeholder"
+    KRB_KDC_HOST: "placeholder"
+    KRB_REALM: "placeholder"
+    BASE_GUID: "placeholder"
+    HADOOP_PROVIDED_PARAMS: "placeholder"
+    ZK_METADATANODE: "placeholder"
+    IMAGE_URL: "placeholder"
+
