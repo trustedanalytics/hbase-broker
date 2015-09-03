@@ -23,12 +23,12 @@ For strict separation of config from code (twelve-factor principle), configurati
 Broker configuration params list (environment properties):
 * obligatory
   * USER_PASSWORD - password to interact with service broker
+  * HADOOP_PROVIDED_PARAMS - list of hbase configuration parameters exposed by service (json format, default: {})
 * obligatory only when hbase requires kerberos authentication:
   * KRB_KDC_HOST - kerberos kdc host address
   * KRB_REALM - kerberos realm name
 * optional :
   * BASE_GUID - base id for catalog plan creation (uuid)
-  * HADOOP_PROVIDED_PARAMS - list of hbase configuration parameters exposed by service (json format, default: {})
   * CF_CATALOG_SERVICENAME - service name in cloud foundry catalog (default: hbase)
   * CF_CATALOG_SERVICEID - service id in cloud foundry catalog (default: hbase)
   * ZK_BRK_SPACE - (default: /zkbrk_space)
