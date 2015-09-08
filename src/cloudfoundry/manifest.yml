@@ -12,6 +12,5 @@ applications:
     KRB_REALM: "placeholder"
     BASE_GUID: "placeholder"
     HADOOP_PROVIDED_PARAMS: "placeholder"
-    ZK_METADATANODE: "placeholder"
     IMAGE_URL: "placeholder"
 
