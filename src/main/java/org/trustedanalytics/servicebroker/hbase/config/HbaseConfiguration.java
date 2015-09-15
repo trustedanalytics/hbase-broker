@@ -15,6 +15,9 @@
  */
 package org.trustedanalytics.servicebroker.hbase.config;
 
+import org.trustedanalytics.hadoop.config.ConfigurationHelper;
+import org.trustedanalytics.hadoop.config.ConfigurationHelperImpl;
+import org.trustedanalytics.hadoop.config.PropertyLocator;
 import org.trustedanalytics.hadoop.kerberos.KrbLoginManager;
 import org.trustedanalytics.hadoop.kerberos.KrbLoginManagerFactory;
 
@@ -79,16 +82,21 @@ public class HbaseConfiguration {
 
     private Admin getSecuredHBaseClient() throws InterruptedException,
             URISyntaxException, LoginException, IOException {
+        ConfigurationHelper confHelper = ConfigurationHelperImpl.getInstance();
         LOGGER.info("Trying to authenticate");
         KrbLoginManager loginManager =
                 KrbLoginManagerFactory.getInstance().getKrbLoginManagerInstance(
-                        configuration.getKerberosKdc(),
-                        configuration.getKerberosRealm());
+                        confHelper.getPropertyFromEnv(PropertyLocator.KRB_KDC)
+                                .orElseThrow(() -> new IllegalStateException("KRB_KDC not found in configuration")),
+                        confHelper.getPropertyFromEnv(PropertyLocator.KRB_REALM)
+                                .orElseThrow(() -> new IllegalStateException("KRB_REALM not found in configuration")));
         loginManager.loginInHadoop(loginManager.loginWithCredentials(
-                configuration.getBrokerUserName(),
-                configuration.getBrokerUserPassword().toCharArray()), hbaseConf);
+                confHelper.getPropertyFromEnv(PropertyLocator.USER)
+                        .orElseThrow(() -> new IllegalStateException("USER not found in configuration")),
+                confHelper.getPropertyFromEnv(PropertyLocator.PASSWORD)
+                        .orElseThrow(() -> new IllegalStateException("PASSWORD not found in configuration")).toCharArray()),
+                hbaseConf);
         return getUnsecuredHBaseClient();
     }
-
 
 }

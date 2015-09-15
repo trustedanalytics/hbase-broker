@@ -34,6 +34,10 @@ import java.io.IOException;
 @Configuration
 public class ZookeeperTestConfig {
 
+    private final String USER = "cf";
+
+    private final String PASSWORD = "cf1";
+
     @Autowired
     private HBaseTestingUtility utility;
 
@@ -54,8 +58,8 @@ public class ZookeeperTestConfig {
         createDir(zkClusterHosts, config.getZkMetadataNode());
         ZookeeperClient zkClient = helper.getZkClientInstance(
                 zkClusterHosts,
-                config.getBrokerUserName(),
-                config.getBrokerUserPassword(),
+                USER,
+                PASSWORD,
                 config.getZkMetadataNode());
         zkClient.init();
         return zkClient;

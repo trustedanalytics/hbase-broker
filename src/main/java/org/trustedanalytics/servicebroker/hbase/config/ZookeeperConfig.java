@@ -21,6 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.trustedanalytics.hadoop.config.ConfigurationHelper;
+import org.trustedanalytics.hadoop.config.ConfigurationHelperImpl;
+import org.trustedanalytics.hadoop.config.PropertyLocator;
 
 import java.io.IOException;
 
@@ -42,11 +45,15 @@ public class ZookeeperConfig {
 
     @Bean
     public ZookeeperClient getZKClient() throws IOException {
+        ConfigurationHelper confHelper = ConfigurationHelperImpl.getInstance();
+
         ZookeeperClient zkClient = helper.getZkClientInstance(
                 hbaseConf.get("hbase.zookeeper.quorum"),
                 //config.getZkClusterHosts(),
-                config.getBrokerUserName(),
-                config.getBrokerUserPassword(),
+                confHelper.getPropertyFromEnv(PropertyLocator.USER)
+                        .orElseThrow(() -> new IllegalStateException("USER not found in configuration")),
+                confHelper.getPropertyFromEnv(PropertyLocator.PASSWORD)
+                        .orElseThrow(() -> new IllegalStateException("PASSWORD not found in configuration")),
                 config.getZkMetadataNode());
         zkClient.init();
         return zkClient;

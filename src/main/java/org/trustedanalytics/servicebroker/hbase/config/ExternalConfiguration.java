@@ -36,24 +36,8 @@ public class ExternalConfiguration {
     @NotNull
     private String zkMetadataNode;
 
-    @Value("${hbase.brokerusername}")
-    @NotNull
-    private String brokerUserName;
-
-    @Value("${hbase.brokeruserpass}")
-    @NotNull
-    private String brokerUserPassword;
-
     @Value("${hbase.provided.params}")
     private String hbaseProvidedParams;
-
-    @Value("${kerberos.kdc}")
-    @NotNull
-    private String kerberosKdc;
-
-    @Value("${kerberos.realm}")
-    @NotNull
-    private String kerberosRealm;
 
     @Value("${cf.servicename}")
     @NotNull
@@ -66,30 +50,6 @@ public class ExternalConfiguration {
     @Value("${cf.baseId}")
     @NotNull
     private String cfBaseId;
-
-    public String getBrokerUserName() {
-        return brokerUserName;
-    }
-
-    public void setBrokerUserName(String brokerUserName) {
-        this.brokerUserName = brokerUserName;
-    }
-
-    public String getKerberosKdc() {
-        return kerberosKdc;
-    }
-
-    public void setKerberosKdc(String kerberosKdc) {
-        this.kerberosKdc = kerberosKdc;
-    }
-
-    public String getKerberosRealm() {
-        return kerberosRealm;
-    }
-
-    public void setKerberosRealm(String kerberosRealm) {
-        this.kerberosRealm = kerberosRealm;
-    }
 
     public String getCfServiceName() {
         return cfServiceName;
@@ -105,14 +65,6 @@ public class ExternalConfiguration {
 
     public void setCfServiceId(String cfServiceId) {
         this.cfServiceId = cfServiceId;
-    }
-
-    public String getBrokerUserPassword() {
-        return brokerUserPassword;
-    }
-
-    public void setBrokerUserPassword(String brokerUserPassword) {
-        this.brokerUserPassword = brokerUserPassword;
     }
 
     public String getZkClusterHosts() {

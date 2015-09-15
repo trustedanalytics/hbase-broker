@@ -2,9 +2,7 @@ security:
 #password cf client will use when interacting with broker
   user.password: ${user.password}
 hbase:
-  brokerusername: cf
   brokergroupname: intel
-  brokeruserpass: cf1
   provided.params: ${hadoop.provided.params:{}}
 cf:
   #name of service in cloud foundry catalog
@@ -13,10 +11,6 @@ cf:
   serviceid: ${cf.catalog.serviceid:hbase}
   #id of base plan in cloud foundry catalog
   baseId: ${BASE_GUID:}
-kerberos:
-  kdc: ${krb.kdc.host:}
-  realm: ${krb.realm:}
-  namenodeprincipal: ${krb.namenodeprincipal:}
 zk:
   cluster: "localhost"
   metadatanode: "/broker"
