@@ -62,7 +62,6 @@ public class HBaseServiceInstanceBindingService extends ForwardingServiceInstanc
         Map<String, Object> credentialsCopy = new HashMap<>(credentials);
 
         credentialsCopy.put(NAMESPACE, NamespaceHelper.getNamespaceName(serviceInstanceId));
-        credentialsCopy.put("hbasetest", "hbasetest");
         return credentialsCopy;
     }
 
