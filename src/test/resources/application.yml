@@ -13,6 +13,6 @@ cf:
   baseId: ${BASE_GUID:}
 zk:
   cluster: "localhost"
-  metadatanode: "/broker"
+  metadatanode: ${ZK_BRK_SPACE:/broker} 
 metadata:
   imageUrl: ${IMAGE_URL:}

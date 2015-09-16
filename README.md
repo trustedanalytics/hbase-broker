@@ -31,7 +31,7 @@ Broker configuration params list (environment properties):
   * BASE_GUID - base id for catalog plan creation (uuid)
   * CF_CATALOG_SERVICENAME - service name in cloud foundry catalog (default: hbase)
   * CF_CATALOG_SERVICEID - service id in cloud foundry catalog (default: hbase)
-  * ZK_BRK_SPACE - (default: /zkbrk_space)
+  * ZK_BRK_SPACE - (default: /broker)
 
 For instance.:
 ```
