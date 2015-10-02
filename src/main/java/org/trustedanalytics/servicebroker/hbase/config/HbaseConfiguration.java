@@ -15,6 +15,9 @@
  */
 package org.trustedanalytics.servicebroker.hbase.config;
 
+import org.apache.hadoop.hbase.security.User;
+import org.apache.hadoop.hbase.security.UserProvider;
+import org.apache.hadoop.security.UserGroupInformation;
 import org.trustedanalytics.hadoop.config.ConfigurationHelper;
 import org.trustedanalytics.hadoop.config.ConfigurationHelperImpl;
 import org.trustedanalytics.hadoop.config.PropertyLocator;
@@ -35,6 +38,7 @@ import org.springframework.context.annotation.Profile;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import javax.security.auth.Subject;
 import javax.security.auth.login.LoginException;
 
 @Profile(Profiles.CLOUD)
@@ -86,17 +90,23 @@ public class HbaseConfiguration {
         LOGGER.info("Trying to authenticate");
         KrbLoginManager loginManager =
                 KrbLoginManagerFactory.getInstance().getKrbLoginManagerInstance(
-                        confHelper.getPropertyFromEnv(PropertyLocator.KRB_KDC)
-                                .orElseThrow(() -> new IllegalStateException("KRB_KDC not found in configuration")),
-                        confHelper.getPropertyFromEnv(PropertyLocator.KRB_REALM)
-                                .orElseThrow(() -> new IllegalStateException("KRB_REALM not found in configuration")));
-        loginManager.loginInHadoop(loginManager.loginWithCredentials(
-                confHelper.getPropertyFromEnv(PropertyLocator.USER)
-                        .orElseThrow(() -> new IllegalStateException("USER not found in configuration")),
-                confHelper.getPropertyFromEnv(PropertyLocator.PASSWORD)
-                        .orElseThrow(() -> new IllegalStateException("PASSWORD not found in configuration")).toCharArray()),
-                hbaseConf);
-        return getUnsecuredHBaseClient();
+                    confHelper.getPropertyFromEnv(PropertyLocator.KRB_KDC)
+                        .orElseThrow(() -> new IllegalStateException("KRB_KDC not found in configuration")),
+                    confHelper.getPropertyFromEnv(PropertyLocator.KRB_REALM)
+                        .orElseThrow(() -> new IllegalStateException(
+                            "KRB_REALM not found in configuration")));
+        Subject subject =
+            loginManager.loginWithCredentials(confHelper.getPropertyFromEnv(PropertyLocator.USER)
+                .orElseThrow(() -> new IllegalStateException("USER not found in configuration")),
+            confHelper.getPropertyFromEnv(PropertyLocator.PASSWORD)
+                .orElseThrow(() -> new IllegalStateException("PASSWORD not found in configuration"))
+                .toCharArray());
+        loginManager.loginInHadoop(subject, hbaseConf);
+        Configuration conf = HBaseConfiguration.create(hbaseConf);
+        User user = UserProvider.instantiate(conf)
+            .create(UserGroupInformation.getUGIFromSubject(subject));
+        Connection connection = ConnectionFactory.createConnection(conf, user);
+        return connection.getAdmin();
     }
 
 }
