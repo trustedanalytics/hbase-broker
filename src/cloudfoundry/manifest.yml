@@ -17,4 +17,4 @@ applications:
     CF_CATALOG_SERVICENAME: hbase
     CF_CATALOG_SERVICEID: hbase
     TAGS: hbase
-
+    VERSION: ${version}
