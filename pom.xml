@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>hbase-broker</artifactId>
 
-    <version>0.5.9</version>
+    <version>0.5.10</version>
 
     <parent>
         <groupId>org.trustedanalytics</groupId>
@@ -113,7 +113,7 @@
         <dependency>
             <groupId>org.trustedanalytics.servicebroker.repository</groupId>
             <artifactId>broker-store-commons</artifactId>
-            <version>0.4.4</version>
+            <version>0.5.1</version>
         </dependency>
         <dependency>
             <groupId>org.cloudfoundry</groupId>
@@ -130,7 +130,7 @@
         <dependency>
             <groupId>org.trustedanalytics.servicebroker.repository</groupId>
             <artifactId>hdfs-broker-store</artifactId>
-            <version>0.4.4</version>
+            <version>0.5.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.servlet</groupId>
@@ -519,7 +519,7 @@
         <dependency>
             <groupId>org.trustedanalytics.servicebroker.repository</groupId>
             <artifactId>zookeeper-broker-store</artifactId>
-            <version>0.4.4</version>
+            <version>0.5.1</version>
         </dependency>
 
         <dependency>
