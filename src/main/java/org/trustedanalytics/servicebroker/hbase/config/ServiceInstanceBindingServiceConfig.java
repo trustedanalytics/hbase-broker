@@ -15,27 +15,20 @@
  */
 package org.trustedanalytics.servicebroker.hbase.config;
 
-import com.google.common.collect.ImmutableMap;
-import org.trustedanalytics.cfbroker.store.api.BrokerStore;
-import org.trustedanalytics.cfbroker.store.impl.ServiceInstanceBindingServiceStore;
-import org.trustedanalytics.hadoop.config.ConfigurationHelper;
-import org.trustedanalytics.hadoop.config.ConfigurationHelperImpl;
-import org.trustedanalytics.hadoop.config.PropertyLocator;
-import org.trustedanalytics.hadoop.HadoopConfigurationHelper;
-import org.trustedanalytics.hadoop.config.ConfigConstants;
-import org.trustedanalytics.servicebroker.hbase.service.HBaseServiceInstanceBindingService;
 import org.cloudfoundry.community.servicebroker.model.CreateServiceInstanceBindingRequest;
 import org.cloudfoundry.community.servicebroker.service.ServiceInstanceBindingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.trustedanalytics.cfbroker.config.HadoopZipConfiguration;
+import org.trustedanalytics.cfbroker.store.api.BrokerStore;
+import org.trustedanalytics.cfbroker.store.impl.ServiceInstanceBindingServiceStore;
+import org.trustedanalytics.servicebroker.hbase.service.HBaseServiceInstanceBindingService;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 
 @Configuration
 public class ServiceInstanceBindingServiceConfig {
@@ -56,18 +49,8 @@ public class ServiceInstanceBindingServiceConfig {
     }
 
     private Map<String, Object> getCredentials() throws IOException {
-        ConfigurationHelper confHelper = ConfigurationHelperImpl.getInstance();
-        Optional<Map<String, String>> hadoopConf =
-                HadoopConfigurationHelper.getHadoopConfFromJson(configuration.getHBaseProvidedParams());
-
-        return ImmutableMap.of(
-                "kerberos", ImmutableMap.of(
-                        "kdc", confHelper.getPropertyFromEnv(PropertyLocator.KRB_KDC)
-                                .orElse(""),
-                        "krealm", confHelper.getPropertyFromEnv(PropertyLocator.KRB_REALM)
-                                .orElse("")),
-                ConfigConstants.HADOOP_CONFIG_KEY_VALUE,
-                    ImmutableMap.copyOf(hadoopConf.orElse(Collections.emptyMap()))
-        );
+      HadoopZipConfiguration hadoopZipConfiguration =
+          HadoopZipConfiguration.createHadoopZipConfiguration(configuration.getHBaseProvidedZip());
+      return hadoopZipConfiguration.getBrokerCredentials();
     }
 }

@@ -15,17 +15,13 @@
  */
 package org.trustedanalytics.servicebroker.hbase.config;
 
-import org.trustedanalytics.hadoop.HadoopConfigurationHelper;
-
-import java.io.IOException;
-import java.util.Map;
-import java.util.Optional;
-
-import javax.security.auth.login.LoginException;
-
 import org.apache.hadoop.conf.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.trustedanalytics.cfbroker.config.HadoopZipConfiguration;
+
+import javax.security.auth.login.LoginException;
+import java.io.IOException;
 
 
 @org.springframework.context.annotation.Configuration
@@ -36,10 +32,7 @@ public class HBaseBrokerConfig {
 
     @Bean
     public Configuration getHadoopConfiguration() throws LoginException, IOException {
-        Configuration hadoopConf = new Configuration(false);
-        Optional<Map<String, String>> hbaseParams =
-                HadoopConfigurationHelper.getHadoopConfFromJson(configuration.getHBaseProvidedParams());
-        HadoopConfigurationHelper.mergeConfiguration(hadoopConf, hbaseParams.get());
-        return hadoopConf;
+      return HadoopZipConfiguration.createHadoopZipConfiguration(
+          configuration.getHBaseProvidedZip()).getAsHadoopConfiguration();
     }
 }

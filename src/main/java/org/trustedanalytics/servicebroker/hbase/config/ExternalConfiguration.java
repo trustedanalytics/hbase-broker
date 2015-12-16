@@ -15,11 +15,10 @@
  */
 package org.trustedanalytics.servicebroker.hbase.config;
 
-import javax.validation.constraints.NotNull;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+
+import javax.validation.constraints.NotNull;
 
 @Configuration
 public class ExternalConfiguration {
@@ -36,8 +35,8 @@ public class ExternalConfiguration {
     @NotNull
     private String zkMetadataNode;
 
-    @Value("${hbase.provided.params}")
-    private String hbaseProvidedParams;
+    @Value("${hbase.provided.zip}")
+    private String hbaseProvidedZip;
 
     @Value("${cf.servicename}")
     @NotNull
@@ -83,12 +82,12 @@ public class ExternalConfiguration {
         this.zkMetadataNode = zkMetadataNode;
     }
 
-    public String getHBaseProvidedParams() {
-        return hbaseProvidedParams;
+    public String getHBaseProvidedZip() {
+        return hbaseProvidedZip;
     }
 
-    public void setHBaseProvidedParams(String hbaseProvidedParams) {
-        this.hbaseProvidedParams = hbaseProvidedParams;
+    public void setHBaseProvidedZip(String hbaseProvidedParams) {
+        this.hbaseProvidedZip = hbaseProvidedParams;
     }
 
     public String getCfBaseId() {
