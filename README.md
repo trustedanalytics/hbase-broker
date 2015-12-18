@@ -36,7 +36,7 @@ For strict separation of config from code (twelve-factor principle), configurati
 Broker configuration params list (environment properties):
 * obligatory
   * USER_PASSWORD - password to interact with service broker
-  * HADOOP_PROVIDED_PARAMS - list of hbase configuration parameters exposed by service (json format, default: {})
+  * HADOOP_PROVIDED_ZIP - list of hbase configuration parameters exposed by service (json format, default: {})
 * optional :
   * BASE_GUID - base id for catalog plan creation (uuid)
   * CF_CATALOG_SERVICENAME - service name in cloud foundry catalog (default: hbase)
@@ -49,40 +49,7 @@ cf se hbase-broker ZKCLUSTER_URL 10.10.9.145:2181,10.10.9.146:2181
 ```
 
 ### Injection of HBASE client configuration
-HBASE client configuration must be set via HADOOP_PROVIDED_PARAMS environment variable. Param `hbase.zookeeper.quorum` is required. List of hadoop configuration has to be proper json form:
-
-```json
-    {"HADOOP_CONFIG_KEY":
-        {
-            "hbase.zookeeper.quorum":"host1,host2,host3,...",
-            "property1.name":"property1.value",
-            "property2.name":"property2.value",
-            ...
-        }
-    }
-
-```
-You can prepare this configuration manually and use cf client,  
-
-```
-cf se hbase-broker HADOOP_PROVIDED_PARAMS "{\"HADOOP_CONFIG_KEY\": {\"hbase.zookeeper.quorum\": \"cdh-master-0.node.gotapaaseu.consul,cdh-master-1.node.gotapaaseu.consul,cdh-master-2.node.gotapaaseu.consul\"}}"
-```
-what is rather annoying. To facilitate the HADOOP_PROVIDED_PARAMS settings, you can use **import_hadoop_conf.sh** script available in admin tool kit https://github.com/trustedanalytics/hadoop-admin-tools. There are several ways to use of this util:
-
-Getting hadoop configuration directly from CDH manager.
-```
-./import_hadoop_conf.sh -cu http://<cloudera_manager_host_name>:7180/cmf/services/4/client-config | xargs -0 cf se hbase-broker HADOOP_PROVIDED_PARAMS
-```
-
-Getting hadoop configuration from local archive.
-```
-./import_hadoop_conf.sh -cu file://path/client-config.zip | xargs -0 cf se hbase-broker HADOOP_PROVIDED_PARAMS
-```
-
-Getting hadoop configuration from stdin.
-```
-cat /path/client-config.zip | ./import_hadoop_conf.sh | xargs -0 cf se hbase-broker HADOOP_PROVIDED_PARAMS
-```
+HBASE client configuration must be set via HADOOP_PROVIDED_ZIP environment variable. Param `hbase.zookeeper.quorum` is required. Description of this process is this same as in HDFS broker case ( https://github.com/trustedanalytics/hdfs-broker/ ).
 
 ## Start  service broker application
 
@@ -120,17 +87,18 @@ and look for :
   "hbase": [
    {
     "credentials": {
-      "org.trustedanalytics.hadoop":{
-        "dfs.ha.namenodes.nameservice1":"namenode8,namenode189",
-        ...
+     "HADOOP_CONFIG_KEY": {
+       <hbase_configuration_json>
       },
+      "HADOOP_CONFIG_ZIP": {
+       "description": "This is the encoded zip file of hadoop-configuration",
+       "encoded_zip": "<base64 of configuration>"
+      }
      "kerberos": {
       "kdc": "ip-10-10-9-198.us-west-2.compute.internal",
       "krealm": "US-WEST-2.COMPUTE.INTERNAL"
      },
-     
     },
-    
     "label": "hbase",
     "name": "hbase-instance",
     "plan": "shared",
