@@ -15,8 +15,7 @@
  */
 package org.trustedanalytics.servicebroker.hbase.config;
 
-
 public final class Profiles {
-    public static final String CLOUD = "cloud";
-    public static final String INTEGRATION_TESTS = "integration_tests";
+  public static final String CLOUD = "cloud";
+  public static final String INTEGRATION_TESTS = "integration_tests";
 }

@@ -1,9 +1,12 @@
 security:
-#password cf client will use when interacting with broker
+  #password cf client will use when interacting with broker
   user.password: ${user.password}
 hbase:
-  brokergroupname: intel
+  #encoded hadoop configuration files for hbase
   provided.zip: ${hadoop.provided.zip:}
+store:
+  #optional parameter to configure zookeeper-store
+  path: ${broker.store.znode:/broker/hbase/metadata}
 cf:
   #name of service in cloud foundry catalog
   servicename: ${cf.catalog.servicename:hbase}
@@ -11,8 +14,6 @@ cf:
   serviceid: ${cf.catalog.serviceid:hbase}
   #id of base plan in cloud foundry catalog
   baseId: ${BASE_GUID:}
-zk:
-  cluster: "localhost"
-  metadatanode: ${ZK_BRK_SPACE:/broker}
 metadata:
+  #encoded image file viewed in marketplace
   imageUrl: ${IMAGE_URL:}

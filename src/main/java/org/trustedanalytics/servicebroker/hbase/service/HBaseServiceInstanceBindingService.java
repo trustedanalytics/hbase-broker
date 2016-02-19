@@ -15,54 +15,53 @@
  */
 package org.trustedanalytics.servicebroker.hbase.service;
 
-import org.trustedanalytics.cfbroker.store.impl.ForwardingServiceInstanceBindingServiceStore;
-import org.trustedanalytics.servicebroker.hbase.config.ExternalConfiguration;
 import org.cloudfoundry.community.servicebroker.exception.ServiceBrokerException;
 import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceBindingExistsException;
 import org.cloudfoundry.community.servicebroker.model.CreateServiceInstanceBindingRequest;
 import org.cloudfoundry.community.servicebroker.model.ServiceInstanceBinding;
 import org.cloudfoundry.community.servicebroker.service.ServiceInstanceBindingService;
+import org.trustedanalytics.cfbroker.store.impl.ForwardingServiceInstanceBindingServiceStore;
+import org.trustedanalytics.servicebroker.hbase.config.ExternalConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class HBaseServiceInstanceBindingService extends ForwardingServiceInstanceBindingServiceStore {
 
-    public static final String NAMESPACE = "hbase.namespace";
+  public static final String NAMESPACE = "hbase.namespace";
 
-    private final Map<String, Object> credentials;
+  private final Map<String, Object> credentials;
 
-    private ExternalConfiguration configuration;
+  private ExternalConfiguration configuration;
 
-    public HBaseServiceInstanceBindingService(ServiceInstanceBindingService instanceBindingService,
-                                              Map<String, Object> credentials,
-                                              ExternalConfiguration configuration) {
-        super(instanceBindingService);
-        this.credentials = credentials;
-        this.configuration = configuration;
-    }
+  public HBaseServiceInstanceBindingService(ServiceInstanceBindingService instanceBindingService,
+                                            Map<String, Object> credentials,
+                                            ExternalConfiguration configuration) {
+    super(instanceBindingService);
+    this.credentials = credentials;
+    this.configuration = configuration;
+  }
 
-    @Override
-    public ServiceInstanceBinding createServiceInstanceBinding(CreateServiceInstanceBindingRequest request)
-            throws ServiceInstanceBindingExistsException, ServiceBrokerException {
-        return withCredentials(super.createServiceInstanceBinding(request));
-    }
+  @Override
+  public ServiceInstanceBinding createServiceInstanceBinding(CreateServiceInstanceBindingRequest request)
+      throws ServiceInstanceBindingExistsException, ServiceBrokerException {
+    return withCredentials(super.createServiceInstanceBinding(request));
+  }
 
 
-    private ServiceInstanceBinding withCredentials(ServiceInstanceBinding serviceInstanceBinding) {
-        return new ServiceInstanceBinding(serviceInstanceBinding.getId(),
-                serviceInstanceBinding.getServiceInstanceId(),
-                getCredentialsFor(serviceInstanceBinding.getServiceInstanceId()),
-                serviceInstanceBinding.getSyslogDrainUrl(),
-                serviceInstanceBinding.getAppGuid());
-    }
+  private ServiceInstanceBinding withCredentials(ServiceInstanceBinding serviceInstanceBinding) {
+    return new ServiceInstanceBinding(serviceInstanceBinding.getId(),
+        serviceInstanceBinding.getServiceInstanceId(),
+        getCredentialsFor(serviceInstanceBinding.getServiceInstanceId()),
+        serviceInstanceBinding.getSyslogDrainUrl(),
+        serviceInstanceBinding.getAppGuid());
+  }
 
-    Map<String, Object> getCredentialsFor(String serviceInstanceId) {
-        Map<String, Object> credentialsCopy = new HashMap<>(credentials);
+  Map<String, Object> getCredentialsFor(String serviceInstanceId) {
+    Map<String, Object> credentialsCopy = new HashMap<>(credentials);
 
-        credentialsCopy.put(NAMESPACE, NamespaceHelper.getNamespaceName(serviceInstanceId));
-        return credentialsCopy;
-    }
+    credentialsCopy.put(NAMESPACE, NamespaceHelper.getNamespaceName(serviceInstanceId));
+    return credentialsCopy;
+  }
 
 }

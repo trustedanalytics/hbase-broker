@@ -15,7 +15,6 @@
  */
 package org.trustedanalytics.servicebroker.hbase.service;
 
-import org.trustedanalytics.cfbroker.store.impl.ForwardingServiceInstanceServiceStore;
 import org.apache.hadoop.hbase.NamespaceDescriptor;
 import org.apache.hadoop.hbase.client.Admin;
 import org.cloudfoundry.community.servicebroker.exception.ServiceBrokerException;
@@ -23,38 +22,43 @@ import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceExistsE
 import org.cloudfoundry.community.servicebroker.model.CreateServiceInstanceRequest;
 import org.cloudfoundry.community.servicebroker.model.ServiceInstance;
 import org.cloudfoundry.community.servicebroker.service.ServiceInstanceService;
+import org.trustedanalytics.cfbroker.store.impl.ForwardingServiceInstanceServiceStore;
+import org.trustedanalytics.servicebroker.hbase.config.catalog.BrokerPlans;
 
 import java.io.IOException;
 
 public class HBaseServiceInstanceService extends ForwardingServiceInstanceServiceStore {
 
+  private final BrokerPlans brokerPlans;
 
-    private final Admin admin;
+  private final Admin admin;
 
-    public HBaseServiceInstanceService(ServiceInstanceService instanceService, Admin admin) {
-        super(instanceService);
-        this.admin = admin;
+  public HBaseServiceInstanceService(ServiceInstanceService instanceService, BrokerPlans brokerPlans, Admin admin) {
+    super(instanceService);
+    this.admin = admin;
+    this.brokerPlans = brokerPlans;
+  }
+
+  @Override
+  public ServiceInstance createServiceInstance(CreateServiceInstanceRequest request)
+      throws ServiceInstanceExistsException, ServiceBrokerException {
+    ServiceInstance serviceInstance = super.createServiceInstance(request);
+
+    if(brokerPlans.getPlanProvisioning(request.getPlanId())) {
+      try {
+        provisionNamespace(serviceInstance.getOrganizationGuid(), serviceInstance.getServiceInstanceId());
+      } catch (IOException e) {
+        throw new ServiceBrokerException(e);
+      }
     }
 
-    @Override
-    public ServiceInstance createServiceInstance(CreateServiceInstanceRequest request)
-            throws ServiceInstanceExistsException, ServiceBrokerException {
-        ServiceInstance serviceInstance = super.createServiceInstance(request);
+    return serviceInstance;
+  }
 
-        try {
-            provisionNamespace(serviceInstance.getOrganizationGuid(), serviceInstance.getServiceInstanceId());
-        } catch (IOException e) {
-            throw new ServiceBrokerException(e);
-        }
-
-        return serviceInstance;
-    }
-
-    private void provisionNamespace(String orgGuid, String instanceId) throws IOException {
-        String namespaceName = NamespaceHelper.getNamespaceName(instanceId);
-        NamespaceDescriptor descriptor = NamespaceDescriptor.create(namespaceName).build();
-        admin.createNamespace(descriptor);
-    }
-
+  private void provisionNamespace(String orgGuid, String instanceId) throws IOException {
+    String namespaceName = NamespaceHelper.getNamespaceName(instanceId);
+    NamespaceDescriptor descriptor = NamespaceDescriptor.create(namespaceName).build();
+    admin.createNamespace(descriptor);
+  }
 
 }

@@ -23,86 +23,74 @@ import javax.validation.constraints.NotNull;
 @Configuration
 public class ExternalConfiguration {
 
-    @Value("${metadata.imageUrl}")
-    @NotNull
-    private String imageUrl;
+  @Value("${hbase.provided.zip}")
+  private String hbaseProvidedZip;
 
-    @Value("${zk.cluster}")
-    @NotNull
-    private String zkClusterHosts;
+  @Value("${store.path}")
+  @NotNull
+  private String brokerStorePath;
 
-    @Value("${zk.metadatanode}")
-    @NotNull
-    private String zkMetadataNode;
+  @Value("${cf.servicename}")
+  @NotNull
+  private String cfServiceName;
 
-    @Value("${hbase.provided.zip}")
-    private String hbaseProvidedZip;
+  @Value("${cf.serviceid}")
+  @NotNull
+  private String cfServiceId;
 
-    @Value("${cf.servicename}")
-    @NotNull
-    private String cfServiceName;
+  @Value("${cf.baseId}")
+  @NotNull
+  private String cfBaseId;
 
-    @Value("${cf.serviceid}")
-    @NotNull
-    private String cfServiceId;
+  @Value("${metadata.imageUrl}")
+  @NotNull
+  private String imageUrl;
 
-    @Value("${cf.baseId}")
-    @NotNull
-    private String cfBaseId;
+  public String getCfServiceName() {
+    return cfServiceName;
+  }
 
-    public String getCfServiceName() {
-        return cfServiceName;
-    }
+  public void setCfServiceName(String cfServiceName) {
+    this.cfServiceName = cfServiceName;
+  }
 
-    public void setCfServiceName(String cfServiceName) {
-        this.cfServiceName = cfServiceName;
-    }
+  public String getCfServiceId() {
+    return cfServiceId;
+  }
 
-    public String getCfServiceId() {
-        return cfServiceId;
-    }
+  public void setCfServiceId(String cfServiceId) {
+    this.cfServiceId = cfServiceId;
+  }
 
-    public void setCfServiceId(String cfServiceId) {
-        this.cfServiceId = cfServiceId;
-    }
+  public String getHBaseProvidedZip() {
+    return hbaseProvidedZip;
+  }
 
-    public String getZkClusterHosts() {
-        return zkClusterHosts;
-    }
+  public void setHBaseProvidedZip(String hbaseProvidedParams) {
+    this.hbaseProvidedZip = hbaseProvidedParams;
+  }
 
-    public void setZkClusterHosts(String zkClusterHosts) {
-        this.zkClusterHosts = zkClusterHosts;
-    }
+  public String getCfBaseId() {
+    return cfBaseId;
+  }
 
-    public String getZkMetadataNode() {
-        return zkMetadataNode;
-    }
+  public void setCfBaseId(String cfBaseId) {
+    this.cfBaseId = cfBaseId;
+  }
 
-    public void setZkMetadataNode(String zkMetadataNode) {
-        this.zkMetadataNode = zkMetadataNode;
-    }
+  public String getImageUrl() {
+    return imageUrl;
+  }
 
-    public String getHBaseProvidedZip() {
-        return hbaseProvidedZip;
-    }
+  public void setImageUrl(String imageUrl) {
+    this.imageUrl = imageUrl;
+  }
 
-    public void setHBaseProvidedZip(String hbaseProvidedParams) {
-        this.hbaseProvidedZip = hbaseProvidedParams;
-    }
+  public String getBrokerStorePath() {
+    return brokerStorePath;
+  }
 
-    public String getCfBaseId() {
-        return cfBaseId;
-    }
-
-    public void setCfBaseId(String cfBaseId) {
-        this.cfBaseId = cfBaseId;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
+  public void setBrokerStorePath(String brokerStorePath) {
+    this.brokerStorePath = brokerStorePath;
+  }
 }

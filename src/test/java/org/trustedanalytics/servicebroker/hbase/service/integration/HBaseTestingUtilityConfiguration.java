@@ -21,22 +21,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Map;
-
-
 @Configuration
 public class HBaseTestingUtilityConfiguration {
 
-    @Autowired
-    private org.apache.hadoop.conf.Configuration hbaseConf;
+  @Autowired
+  private org.apache.hadoop.conf.Configuration hbaseConf;
 
-    @Bean(destroyMethod = "shutdownMiniCluster")
-    public HBaseTestingUtility getHBaseTestingUtility() throws Exception {
-        org.apache.hadoop.conf.Configuration configuration = HBaseConfiguration.create(hbaseConf);
-        configuration.set("fs.hdfs.impl", "org.trustedanalytics.servicebroker.hbase.service.integration.FakeFS");
-        HBaseTestingUtility utility = new HBaseTestingUtility(configuration);
-        utility.startMiniCluster();
-        return utility;
-    }
-
+  @Bean(destroyMethod = "shutdownMiniCluster")
+  public HBaseTestingUtility getHBaseTestingUtility() throws Exception {
+    org.apache.hadoop.conf.Configuration configuration = HBaseConfiguration.create(hbaseConf);
+    configuration.set("fs.hdfs.impl", "org.trustedanalytics.servicebroker.hbase.service.integration.FakeFS");
+    HBaseTestingUtility utility = new HBaseTestingUtility(configuration);
+    utility.startMiniCluster();
+    return utility;
+  }
 }

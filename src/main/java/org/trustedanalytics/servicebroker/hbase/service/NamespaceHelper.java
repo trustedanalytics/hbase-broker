@@ -16,19 +16,17 @@
 package org.trustedanalytics.servicebroker.hbase.service;
 
 import com.google.common.hash.Hashing;
-import org.apache.commons.codec.digest.DigestUtils;
 
 public class NamespaceHelper {
 
-    /**
-     * In multitenant env this method will return string composed from organization name and serviceInstanceId
-     * (at least).
-     *
-     * @param serviceInstanceId
-     * @return
-     */
-    public static String getNamespaceName(String serviceInstanceId) {
-
-        return Hashing.sha1().hashString(serviceInstanceId).toString();
-    }
+  /**
+   * In multitenant env this method will return string composed from organization name and serviceInstanceId
+   * (at least).
+   *
+   * @param serviceInstanceId
+   * @return
+   */
+  public static String getNamespaceName(String serviceInstanceId) {
+    return Hashing.sha1().hashString(serviceInstanceId).toString();
+  }
 }

@@ -13,28 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trustedanalytics.servicebroker.hbase.service.integration;
+package org.trustedanalytics.servicebroker.hbase.config.catalog;
 
-import org.apache.hadoop.hbase.HBaseTestingUtility;
-import org.apache.hadoop.hbase.client.Admin;
+import org.cloudfoundry.community.servicebroker.model.Catalog;
+import org.cloudfoundry.community.servicebroker.model.Plan;
+import org.cloudfoundry.community.servicebroker.model.ServiceDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.trustedanalytics.servicebroker.hbase.config.Profiles;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-@Profile(Profiles.INTEGRATION_TESTS)
 @Configuration
-public class HBaseTestConfiguration {
+public class BrokerPlans {
 
   @Autowired
-  private HBaseTestingUtility utility;
+  private Catalog catalog;
 
-  @Bean
-  public Admin getHBaseAdmin() throws IOException, InterruptedException, URISyntaxException {
-    return utility.getHBaseAdmin();
+  public boolean getPlanProvisioning(String planId) {
+    ServiceDefinition serviceDefinition = catalog.getServiceDefinitions().get(0);
+    Plan catalogPlan = serviceDefinition.getPlans().stream().filter(plan -> plan.getId().equals(planId)).findFirst()
+        .orElseThrow(() -> new IllegalArgumentException("Trying to create instance with unsupported plan"));
+
+    return (boolean)catalogPlan.getMetadata().get("isProvisioning");
   }
 }

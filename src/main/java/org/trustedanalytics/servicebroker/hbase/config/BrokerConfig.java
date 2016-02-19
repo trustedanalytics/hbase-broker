@@ -8,20 +8,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-
 /**
  * Force the base spring boot packages to be searched for dependencies.
- * 
- * @author sgreenberg
  *
+ * @author sgreenberg
  */
 
 @Configuration
 @ComponentScan(basePackages = "org.trustedanalytics.servicebroker")
 public class BrokerConfig {
 
-    @Bean
-    public BrokerApiVersion brokerApiVersion() {
-        return new BrokerApiVersion();
-    }
+  @Bean
+  public BrokerApiVersion brokerApiVersion() {
+    return new BrokerApiVersion();
+  }
 }

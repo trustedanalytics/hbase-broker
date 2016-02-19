@@ -15,12 +15,6 @@
  */
 package org.trustedanalytics.servicebroker.hbase.config;
 
-import java.io.IOException;
-
-import javax.security.auth.login.LoginException;
-
-import org.trustedanalytics.cfbroker.store.api.BrokerStore;
-import org.trustedanalytics.cfbroker.store.impl.ServiceInstanceServiceStore;
 import org.apache.hadoop.hbase.client.Admin;
 import org.cloudfoundry.community.servicebroker.model.ServiceInstance;
 import org.cloudfoundry.community.servicebroker.service.ServiceInstanceService;
@@ -30,28 +24,34 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.trustedanalytics.cfbroker.store.api.BrokerStore;
+import org.trustedanalytics.cfbroker.store.impl.ServiceInstanceServiceStore;
+import org.trustedanalytics.servicebroker.hbase.config.catalog.BrokerPlans;
 import org.trustedanalytics.servicebroker.hbase.service.HBaseServiceInstanceService;
+
+import javax.security.auth.login.LoginException;
+import java.io.IOException;
 
 @Configuration
 public class ServiceInstanceServiceConfig {
 
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(ServiceInstanceServiceConfig.class);
+  private static final Logger LOGGER = LoggerFactory
+      .getLogger(ServiceInstanceServiceConfig.class);
 
-    @Autowired
-    private ExternalConfiguration configuration;
+  @Autowired
+  private BrokerPlans brokerPlans;
 
-    @Autowired
-    private Admin admin;
+  @Autowired
+  private Admin admin;
 
-    @Autowired
-    @Qualifier(value = Qualifiers.SERVICE_INSTANCE)
-    private BrokerStore<ServiceInstance> store;
+  @Autowired
+  @Qualifier(value = Qualifiers.SERVICE_INSTANCE)
+  private BrokerStore<ServiceInstance> store;
 
-    @Bean
-    public ServiceInstanceService getServiceInstanceService() throws IllegalArgumentException,
-            IOException, LoginException {
+  @Bean
+  public ServiceInstanceService getServiceInstanceService() throws IllegalArgumentException,
+      IOException, LoginException {
 
-        return new HBaseServiceInstanceService(new ServiceInstanceServiceStore(store), admin);
-    }
+    return new HBaseServiceInstanceService(new ServiceInstanceServiceStore(store), brokerPlans, admin);
+  }
 }

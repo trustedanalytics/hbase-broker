@@ -15,10 +15,6 @@
  */
 package org.trustedanalytics.servicebroker.hbase.service.integration;
 
-import org.trustedanalytics.cfbroker.store.zookeeper.service.ZookeeperClient;
-import org.trustedanalytics.cfbroker.store.zookeeper.service.ZookeeperClientBuilder;
-import org.trustedanalytics.servicebroker.hbase.config.ExternalConfiguration;
-import org.trustedanalytics.servicebroker.hbase.config.Profiles;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryOneTime;
@@ -27,6 +23,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.trustedanalytics.cfbroker.store.zookeeper.service.ZookeeperClient;
+import org.trustedanalytics.cfbroker.store.zookeeper.service.ZookeeperClientBuilder;
+import org.trustedanalytics.servicebroker.hbase.config.ExternalConfiguration;
+import org.trustedanalytics.servicebroker.hbase.config.Profiles;
 
 import java.io.IOException;
 
@@ -34,66 +34,66 @@ import java.io.IOException;
 @Configuration
 public class ZookeeperTestConfig {
 
-    private final String USER = "cf";
+  private final String USER = "cf";
 
-    private final String PASSWORD = "cf1";
+  private final String PASSWORD = "cf1";
 
-    @Autowired
-    private HBaseTestingUtility utility;
+  @Autowired
+  private HBaseTestingUtility utility;
 
-    @Autowired
-    private ExternalConfiguration config;
+  @Autowired
+  private ExternalConfiguration config;
 
-    private FactoryHelper helper;
+  private FactoryHelper helper;
 
-    public ZookeeperTestConfig() {
-        System.out.println("Running ZookeeperTestConfig constructor");
-        this.helper = new FactoryHelper();
+  public ZookeeperTestConfig() {
+    System.out.println("Running ZookeeperTestConfig constructor");
+    this.helper = new FactoryHelper();
+  }
+
+  @Bean
+  public ZookeeperClient getZKClient() throws Exception {
+
+    String zkClusterHosts = "localhost:" + utility.getZkCluster().getClientPort();
+    createDir(zkClusterHosts, config.getBrokerStorePath());
+    ZookeeperClient zkClient = helper.getZkClientInstance(
+        zkClusterHosts,
+        USER,
+        PASSWORD,
+        config.getBrokerStorePath());
+    zkClient.init();
+    return zkClient;
+  }
+
+  final static class FactoryHelper {
+    ZookeeperClient getZkClientInstance(String zkCluster,
+                                        String user,
+                                        String pass,
+                                        String zkNode) throws IOException {
+      ZookeeperClient client = new ZookeeperClientBuilder(zkCluster, user, pass, zkNode).build();
+      return client;
     }
+  }
 
-    @Bean
-    public ZookeeperClient getZKClient() throws Exception {
+  private void createDir(String connectionString, String path) throws Exception {
 
-        String zkClusterHosts = "localhost:" + utility.getZkCluster().getClientPort();
-        createDir(zkClusterHosts, config.getZkMetadataNode());
-        ZookeeperClient zkClient = helper.getZkClientInstance(
-                zkClusterHosts,
-                USER,
-                PASSWORD,
-                config.getZkMetadataNode());
-        zkClient.init();
-        return zkClient;
-    }
+    CuratorFramework tempClient = getNewTempClient(connectionString);
 
-    final static class FactoryHelper {
-        ZookeeperClient getZkClientInstance(String zkCluster,
-                                            String user,
-                                            String pass,
-                                            String zkNode) throws IOException {
-            ZookeeperClient client = new ZookeeperClientBuilder(zkCluster, user, pass, zkNode).build();
-            return client;
-        }
-    }
+    tempClient.create()
+        .creatingParentsIfNeeded()
+        .forPath(path);
 
-    private void createDir(String connectionString, String path) throws Exception {
+    tempClient.close();
+  }
 
-        CuratorFramework tempClient = getNewTempClient(connectionString);
-
-        tempClient.create()
-                .creatingParentsIfNeeded()
-                .forPath(path);
-
-        tempClient.close();
-    }
-
-    private static CuratorFramework getNewTempClient(String connectionString) {
-        CuratorFramework tempClient = CuratorFrameworkFactory.builder()
-                .connectString(connectionString)
-                .retryPolicy(new RetryOneTime(100))
-                .build();
-        tempClient.start();
-        return tempClient;
-    }
+  private static CuratorFramework getNewTempClient(String connectionString) {
+    CuratorFramework tempClient = CuratorFrameworkFactory.builder()
+        .connectString(connectionString)
+        .retryPolicy(new RetryOneTime(100))
+        .build();
+    tempClient.start();
+    return tempClient;
+  }
 
 }
 

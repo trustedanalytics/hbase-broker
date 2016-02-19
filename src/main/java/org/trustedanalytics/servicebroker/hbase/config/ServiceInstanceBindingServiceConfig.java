@@ -33,24 +33,24 @@ import java.util.Map;
 @Configuration
 public class ServiceInstanceBindingServiceConfig {
 
-    @Autowired
-    private ExternalConfiguration configuration;
+  @Autowired
+  private ExternalConfiguration configuration;
 
-    @Autowired
-    @Qualifier(value = Qualifiers.SERVICE_INSTANCE_BINDING)
-    private BrokerStore<CreateServiceInstanceBindingRequest> store;
+  @Autowired
+  @Qualifier(value = Qualifiers.SERVICE_INSTANCE_BINDING)
+  private BrokerStore<CreateServiceInstanceBindingRequest> store;
 
-    @Bean
-    public ServiceInstanceBindingService getServiceInstanceBindingService()
-            throws IllegalArgumentException, IOException, LoginException {
+  @Bean
+  public ServiceInstanceBindingService getServiceInstanceBindingService()
+      throws IllegalArgumentException, IOException, LoginException {
 
-        return new HBaseServiceInstanceBindingService(
-                new ServiceInstanceBindingServiceStore(store), getCredentials(), configuration);
-    }
+    return new HBaseServiceInstanceBindingService(
+        new ServiceInstanceBindingServiceStore(store), getCredentials(), configuration);
+  }
 
-    private Map<String, Object> getCredentials() throws IOException {
-      HadoopZipConfiguration hadoopZipConfiguration =
-          HadoopZipConfiguration.createHadoopZipConfiguration(configuration.getHBaseProvidedZip());
-      return hadoopZipConfiguration.getBrokerCredentials();
-    }
+  private Map<String, Object> getCredentials() throws IOException {
+    HadoopZipConfiguration hadoopZipConfiguration =
+        HadoopZipConfiguration.createHadoopZipConfiguration(configuration.getHBaseProvidedZip());
+    return hadoopZipConfiguration.getBrokerCredentials();
+  }
 }

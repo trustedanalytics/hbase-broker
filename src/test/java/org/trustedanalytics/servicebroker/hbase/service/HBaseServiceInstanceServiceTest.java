@@ -27,62 +27,58 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.trustedanalytics.servicebroker.hbase.config.catalog.BrokerPlans;
+
+import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import java.util.Collections;
-
-import static org.mockito.Matchers.any;
-
 
 @RunWith(MockitoJUnitRunner.class)
-public class  HBaseServiceInstanceServiceTest {
+public class HBaseServiceInstanceServiceTest {
 
+  private HBaseServiceInstanceService service;
 
-    private HBaseServiceInstanceService service;
+  @Mock
+  private ServiceInstanceService instanceService;
 
-    @Mock
-    private ServiceInstanceService instanceService;
+  @Mock
+  private Admin admin;
 
-    @Mock
-    private Admin admin;
+  @Mock
+  private BrokerPlans brokerPlans;
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
 
-    @Before
-    public void before() {
-        service = new HBaseServiceInstanceService(instanceService, admin);
+  @Before
+  public void before() {
+    service = new HBaseServiceInstanceService(instanceService, brokerPlans, admin);
+  }
 
-    }
+  @Test
+  public void testCreateServiceInstance_success_delegateCallAndForwardBackReturnedServiceInstance()
+      throws Exception {
+    ServiceInstance instance = getServiceInstance("id");
+    CreateServiceInstanceRequest request = new CreateServiceInstanceRequest(
+        getServiceDefinition().getId(), instance.getPlanId(), instance.getOrganizationGuid(), instance.getSpaceGuid()).
+        withServiceInstanceId(instance.getServiceInstanceId()).withServiceDefinition(getServiceDefinition());
+    when(instanceService.createServiceInstance(request)).thenReturn(instance);
+    ServiceInstance returnedInstance = service.createServiceInstance(request);
+    verify(instanceService).createServiceInstance(request);
+    assertThat(returnedInstance, equalTo(instance));
+  }
 
-    @Test
-    public void testCreateServiceInstance_success_delegateCallAndForwardBackReturnedServiceInstance()
-            throws Exception {
-        ServiceInstance instance = getServiceInstance("id");
-        CreateServiceInstanceRequest request = new CreateServiceInstanceRequest(
-                getServiceDefinition().getId(), instance.getPlanId(), instance.getOrganizationGuid(), instance.getSpaceGuid()).
-                withServiceInstanceId(instance.getServiceInstanceId()).withServiceDefinition(getServiceDefinition());
-        when(instanceService.createServiceInstance(request)).thenReturn(instance);
-        ServiceInstance returnedInstance = service.createServiceInstance(request);
-        verify(instanceService).createServiceInstance(request);
-        assertThat(returnedInstance, equalTo(instance));
-    }
+  private ServiceInstance getServiceInstance(String id) {
+    return new ServiceInstance(
+        new CreateServiceInstanceRequest(getServiceDefinition().getId(), "planId-shared", "organizationGuid", "spaceGuid")
+            .withServiceInstanceId(id));
+  }
 
-    private ServiceInstance getServiceInstance(String id) {
-        return new ServiceInstance(
-                new CreateServiceInstanceRequest(getServiceDefinition().getId(), "planId", "organizationGuid", "spaceGuid")
-                        .withServiceInstanceId(id));
-    }
-
-
-    private ServiceDefinition getServiceDefinition() {
-        return new ServiceDefinition("def", "name", "desc", true, Collections.emptyList());
-    }
-
-
-
+  private ServiceDefinition getServiceDefinition() {
+    return new ServiceDefinition("def", "name", "desc", true, Collections.emptyList());
+  }
 
 }

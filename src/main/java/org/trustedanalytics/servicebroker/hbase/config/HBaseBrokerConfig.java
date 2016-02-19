@@ -23,16 +23,15 @@ import org.trustedanalytics.cfbroker.config.HadoopZipConfiguration;
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
 
-
 @org.springframework.context.annotation.Configuration
 public class HBaseBrokerConfig {
 
-    @Autowired
-    private ExternalConfiguration configuration;
+  @Autowired
+  private ExternalConfiguration configuration;
 
-    @Bean
-    public Configuration getHadoopConfiguration() throws LoginException, IOException {
-      return HadoopZipConfiguration.createHadoopZipConfiguration(
-          configuration.getHBaseProvidedZip()).getAsHadoopConfiguration();
-    }
+  @Bean
+  public Configuration getHadoopConfiguration() throws LoginException, IOException {
+    return HadoopZipConfiguration.createHadoopZipConfiguration(
+        configuration.getHBaseProvidedZip()).getAsHadoopConfiguration();
+  }
 }

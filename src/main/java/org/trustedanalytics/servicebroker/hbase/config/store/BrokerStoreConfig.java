@@ -13,24 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trustedanalytics.servicebroker.hbase.config;
+package org.trustedanalytics.servicebroker.hbase.config.store;
 
-import org.trustedanalytics.cfbroker.store.api.BrokerStore;
-import org.trustedanalytics.cfbroker.store.serialization.RepositoryDeserializer;
-import org.trustedanalytics.cfbroker.store.serialization.RepositorySerializer;
-import org.trustedanalytics.cfbroker.store.zookeeper.service.ZookeeperClient;
-import org.trustedanalytics.cfbroker.store.zookeeper.service.ZookeeperStore;
 import org.cloudfoundry.community.servicebroker.model.CreateServiceInstanceBindingRequest;
 import org.cloudfoundry.community.servicebroker.model.ServiceInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.trustedanalytics.cfbroker.store.api.BrokerStore;
+import org.trustedanalytics.cfbroker.store.serialization.RepositoryDeserializer;
+import org.trustedanalytics.cfbroker.store.serialization.RepositorySerializer;
+import org.trustedanalytics.cfbroker.store.zookeeper.service.ZookeeperClient;
+import org.trustedanalytics.cfbroker.store.zookeeper.service.ZookeeperStore;
+import org.trustedanalytics.servicebroker.hbase.config.ExternalConfiguration;
+import org.trustedanalytics.servicebroker.hbase.config.Qualifiers;
 
 import java.io.IOException;
 
 @Configuration
 public class BrokerStoreConfig {
+
+  @Autowired
+  private ZookeeperClient zkClient;
 
   @Autowired
   private ExternalConfiguration config;
@@ -51,9 +56,6 @@ public class BrokerStoreConfig {
   @Qualifier(Qualifiers.SERVICE_INSTANCE_BINDING)
   private RepositoryDeserializer<CreateServiceInstanceBindingRequest> bindingDeserializer;
 
-  @Autowired
-  private ZookeeperClient zkClient;
-
   @Bean
   @Qualifier(Qualifiers.SERVICE_INSTANCE)
   public BrokerStore<ServiceInstance> getServiceInstanceStore()
@@ -70,7 +72,4 @@ public class BrokerStoreConfig {
         new ZookeeperStore<>(zkClient, bindingSerializer, bindingDeserializer);
     return brokerStore;
   }
-
-
-
 }

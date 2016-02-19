@@ -15,7 +15,6 @@
  */
 package org.trustedanalytics.servicebroker.hbase.service.integration;
 
-
 import com.google.common.hash.Hashing;
 import org.trustedanalytics.cfbroker.store.api.BrokerStore;
 import org.trustedanalytics.cfbroker.store.api.Location;
@@ -57,80 +56,80 @@ import static org.hamcrest.core.IsEqual.equalTo;
 @ActiveProfiles(Profiles.INTEGRATION_TESTS)
 public class HbaseBrokerTest {
 
-    @Autowired
-    private HBaseTestingUtility utility;
+  @Autowired
+  private HBaseTestingUtility utility;
 
-    @Autowired
-    private HBaseServiceInstanceService instanceService;
+  @Autowired
+  private HBaseServiceInstanceService instanceService;
 
-    @Autowired
-    private HBaseServiceInstanceBindingService bindingService;
+  @Autowired
+  private HBaseServiceInstanceBindingService bindingService;
 
-    @Autowired
-    private ZookeeperClient zkClient;
+  @Autowired
+  private ZookeeperClient zkClient;
 
-    @Autowired
-    private ExternalConfiguration config;
+  @Autowired
+  private ExternalConfiguration config;
 
-    @Autowired
-    @Qualifier(Qualifiers.SERVICE_INSTANCE_BINDING)
-    public BrokerStore<CreateServiceInstanceBindingRequest> bindingBrokerStore;
+  @Autowired
+  @Qualifier(Qualifiers.SERVICE_INSTANCE_BINDING)
+  public BrokerStore<CreateServiceInstanceBindingRequest> bindingBrokerStore;
 
-    @Test
-    public void testCreateInstance_success_shouldCreateHBaseNamespace() throws Exception {
-        instanceService.createServiceInstance(getCreateInstanceRequest("instanceId"));
-        HBaseAdmin hBaseAdmin = utility.getHBaseAdmin();
-        String createdNSName = hBaseAdmin.getNamespaceDescriptor(NamespaceHelper.getNamespaceName("instanceId")).getName();
-        assertThat(createdNSName, equalTo(Hashing.sha1().hashString("instanceId").toString()));
-    }
+  @Test
+  public void testCreateInstance_success_shouldCreateHBaseNamespace() throws Exception {
+    instanceService.createServiceInstance(getCreateInstanceRequest("instanceId"));
+    HBaseAdmin hBaseAdmin = utility.getHBaseAdmin();
+    String createdNSName = hBaseAdmin.getNamespaceDescriptor(NamespaceHelper.getNamespaceName("instanceId")).getName();
+    assertThat(createdNSName, equalTo(Hashing.sha1().hashString("instanceId").toString()));
+  }
 
-    @Test
-    public void testCreateInstance_success_shouldStoreInstanceDataInBrokerStore() throws Exception {
-        CreateServiceInstanceRequest request = getCreateInstanceRequest("instanceId2");
-        instanceService.createServiceInstance(request);
-        ServiceInstance serviceInstance = instanceService.getServiceInstance("instanceId2");
-        assertThat(request.getServiceInstanceId(), equalTo(serviceInstance.getServiceInstanceId()));
-        //todo: compare all of the fields
-    }
+  @Test
+  public void testCreateInstance_success_shouldStoreInstanceDataInBrokerStore() throws Exception {
+    CreateServiceInstanceRequest request = getCreateInstanceRequest("instanceId2");
+    instanceService.createServiceInstance(request);
+    ServiceInstance serviceInstance = instanceService.getServiceInstance("instanceId2");
+    assertThat(request.getServiceInstanceId(), equalTo(serviceInstance.getServiceInstanceId()));
+    //todo: compare all of the fields
+  }
 
-    @Test
-    public void testCreateInstanceBinding_success_shouldStoreInstanceBindingDataInBrokerStore() throws Exception {
-        instanceService.createServiceInstance(getCreateInstanceRequest("instanceId3"));
-        CreateServiceInstanceBindingRequest request = getCreateServiceInstanceBindingRequest("instanceId3", "bindingId2");
-        bindingService.createServiceInstanceBinding(request);
-        Optional<CreateServiceInstanceBindingRequest> bindingInstance = bindingBrokerStore.getById(Location.newInstance("bindingId2", "instanceId3"));
-        assertThat(bindingInstance.get().getAppGuid(), equalTo("appGuid"));
-        assertThat(bindingInstance.get().getServiceDefinitionId(), equalTo("instanceId3"));
-        assertThat(bindingInstance.get().getPlanId(), equalTo("planId"));
-    }
+  @Test
+  public void testCreateInstanceBinding_success_shouldStoreInstanceBindingDataInBrokerStore() throws Exception {
+    instanceService.createServiceInstance(getCreateInstanceRequest("instanceId3"));
+    CreateServiceInstanceBindingRequest request = getCreateServiceInstanceBindingRequest("instanceId3", "bindingId2");
+    bindingService.createServiceInstanceBinding(request);
+    Optional<CreateServiceInstanceBindingRequest> bindingInstance = bindingBrokerStore.getById(Location.newInstance("bindingId2", "instanceId3"));
+    assertThat(bindingInstance.get().getAppGuid(), equalTo("appGuid"));
+    assertThat(bindingInstance.get().getServiceDefinitionId(), equalTo("instanceId3"));
+    assertThat(bindingInstance.get().getPlanId(), equalTo("fake-shared-plan"));
+  }
 
-    @Test
-    public void testCreateInstanceBinding_success_shouldReturnHBaseNamespaceNameInCredentials() throws Exception {
-        CreateServiceInstanceBindingRequest request = new CreateServiceInstanceBindingRequest(
-                getServiceInstance("serviceId").getServiceDefinitionId(), "planId", "appGuid").
-                withBindingId("bindingId").withServiceInstanceId("serviceId");
-        ServiceInstanceBinding binding = bindingService.createServiceInstanceBinding(request);
-        String namespaceInCredentials = (String)binding.getCredentials().get(HBaseServiceInstanceBindingService.NAMESPACE);
-        assertThat(namespaceInCredentials, equalTo(Hashing.sha1().hashString("serviceId").toString()));
-    }
+  @Test
+  public void testCreateInstanceBinding_success_shouldReturnHBaseNamespaceNameInCredentials() throws Exception {
+    CreateServiceInstanceBindingRequest request = new CreateServiceInstanceBindingRequest(
+        getServiceInstance("serviceId").getServiceDefinitionId(), "fake-shared-plan", "appGuid").
+        withBindingId("bindingId").withServiceInstanceId("serviceId");
+    ServiceInstanceBinding binding = bindingService.createServiceInstanceBinding(request);
+    String namespaceInCredentials = (String) binding.getCredentials().get(HBaseServiceInstanceBindingService.NAMESPACE);
+    assertThat(namespaceInCredentials, equalTo(Hashing.sha1().hashString("serviceId").toString()));
+  }
 
-    private ServiceInstanceBinding getServiceInstanceBinding(String id) {
-        return new ServiceInstanceBinding(id, "serviceId", Collections.emptyMap(), null, "guid");
-    }
+  private ServiceInstanceBinding getServiceInstanceBinding(String id) {
+    return new ServiceInstanceBinding(id, "serviceId", Collections.emptyMap(), null, "guid");
+  }
 
-    private ServiceInstance getServiceInstance(String id) {
-        return new ServiceInstance(new CreateServiceInstanceRequest(id, "planId", "organizationGuid", "spaceGuid"));
-    }
+  private ServiceInstance getServiceInstance(String id) {
+    return new ServiceInstance(new CreateServiceInstanceRequest(id, "fake-shared-plan", "organizationGuid", "spaceGuid"));
+  }
 
-    private CreateServiceInstanceRequest getCreateInstanceRequest(String serviceId) {
-        return new CreateServiceInstanceRequest("serviceDefinitionId", "planId", "organizationGuid","spaceGuid").
-                withServiceInstanceId(serviceId);
-    }
+  private CreateServiceInstanceRequest getCreateInstanceRequest(String serviceId) {
+    return new CreateServiceInstanceRequest("serviceDefinitionId", "fake-shared-plan", "organizationGuid", "spaceGuid").
+        withServiceInstanceId(serviceId);
+  }
 
-    private CreateServiceInstanceBindingRequest getCreateServiceInstanceBindingRequest(String serviceId, String bindingId) {
-        return new CreateServiceInstanceBindingRequest(
-                getServiceInstance(serviceId).getServiceDefinitionId(), "planId", "appGuid").
-                withBindingId(bindingId).withServiceInstanceId(serviceId);
-    }
+  private CreateServiceInstanceBindingRequest getCreateServiceInstanceBindingRequest(String serviceId, String bindingId) {
+    return new CreateServiceInstanceBindingRequest(
+        getServiceInstance(serviceId).getServiceDefinitionId(), "fake-shared-plan", "appGuid").
+        withBindingId(bindingId).withServiceInstanceId(serviceId);
+  }
 
 }

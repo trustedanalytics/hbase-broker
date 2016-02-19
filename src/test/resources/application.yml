@@ -1,18 +1,13 @@
 security:
-#password cf client will use when interacting with broker
   user.password: fake
 hbase:
   brokergroupname: supergroup
   provided.zip: ${hadoop.provided.zip:}
+store:
+  path: ${broker.store.znode:/broker/hbase}
 cf:
-  #name of service in cloud foundry catalog
-  servicename: ${cf.catalog.servicename:hdfs}
-  #id of service in cloud foundry catalog
-  serviceid: ${cf.catalog.serviceid:hdfs}
-  #id of base plan in cloud foundry catalog
-  baseId: ${BASE_GUID:}
-zk:
-  cluster: "localhost"
-  metadatanode: ${ZK_BRK_SPACE:/broker} 
+  servicename: ${cf.catalog.servicename:hbase}
+  serviceid: ${cf.catalog.serviceid:hbase}
+  baseId: ${BASE_GUID:fake}
 metadata:
   imageUrl: ${IMAGE_URL:}
