@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trustedanalytics.servicebroker.hbase.config;
+package org.trustedanalytics.servicebroker.hbase.plans.binding;
 
-public final class Qualifiers {
-  public static final String SERVICE_INSTANCE = "serviceInstance";
-  public static final String SERVICE_INSTANCE_BINDING = "serviceInstanceBinding";
+import java.util.Map;
+import java.util.UUID;
+
+public interface HbaseSimpleBindingOperations {
+  Map<String, Object> createCredentialsMap(String instanceId);
+  Map<String, Object> getBareCredentialsMap();
 }

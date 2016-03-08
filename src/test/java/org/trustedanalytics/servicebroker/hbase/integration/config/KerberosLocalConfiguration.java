@@ -13,32 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trustedanalytics.servicebroker.hbase.config.kerberos;
+package org.trustedanalytics.servicebroker.hbase.integration.config;
 
 import java.io.IOException;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.trustedanalytics.hadoop.config.client.AppConfiguration;
-import org.trustedanalytics.hadoop.config.client.Configurations;
-import org.trustedanalytics.hadoop.config.client.Property;
-import org.trustedanalytics.hadoop.config.client.ServiceInstanceConfiguration;
-import org.trustedanalytics.servicebroker.hbase.config.Profiles;
+import org.trustedanalytics.servicebroker.framework.kerberos.KerberosProperties;
 
 @Configuration
-public class KerberosConfig {
+public class KerberosLocalConfiguration {
 
   @Bean
-  @Profile(Profiles.CLOUD)
+  @Profile("integration-test")
   public KerberosProperties getKerberosProperties() throws IOException {
-    AppConfiguration helper = Configurations.newInstanceFromEnv();
-    ServiceInstanceConfiguration krbConf = helper.getServiceConfig("kerberos-service");
-
-    return new KerberosProperties(
-        krbConf.getProperty(Property.KRB_KDC).get(),
-        krbConf.getProperty(Property.KRB_REALM).get(),
-        krbConf.getProperty(Property.USER).get(),
-        krbConf.getProperty(Property.PASSWORD).get());
+    return new KerberosProperties("kdc", "realm", "test", false);
   }
 }

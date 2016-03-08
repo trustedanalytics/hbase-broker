@@ -13,20 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trustedanalytics.servicebroker.hbase.service;
+package org.trustedanalytics.servicebroker.hbase.integration.config;
 
-import com.google.common.hash.Hashing;
+import java.io.IOException;
 
-public class NamespaceHelper {
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
 
-  /**
-   * In multitenant env this method will return string composed from organization name and serviceInstanceId
-   * (at least).
-   *
-   * @param serviceInstanceId
-   * @return
-   */
-  public static String getNamespaceName(String serviceInstanceId) {
-    return Hashing.sha1().hashString(serviceInstanceId).toString();
+public class FakeFS extends DistributedFileSystem {
+
+  private static String WORKING_DIR_PATH = "/tmp";
+
+  public FakeFS() throws IOException {
+    super();
+  }
+
+  @Override
+  public Path getWorkingDirectory() {
+    return new Path(WORKING_DIR_PATH);
   }
 }

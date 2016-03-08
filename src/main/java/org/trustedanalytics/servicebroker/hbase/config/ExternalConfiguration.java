@@ -15,82 +15,35 @@
  */
 package org.trustedanalytics.servicebroker.hbase.config;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-
-import javax.validation.constraints.NotNull;
 
 @Configuration
 public class ExternalConfiguration {
 
-  @Value("${hbase.provided.zip}")
-  private String hbaseProvidedZip;
-
-  @Value("${store.path}")
+  @Value("${store.user}")
   @NotNull
-  private String brokerStorePath;
+  private String user;
 
-  @Value("${cf.servicename}")
+  @Value("${store.password}")
   @NotNull
-  private String cfServiceName;
+  private String password;
 
-  @Value("${cf.serviceid}")
-  @NotNull
-  private String cfServiceId;
-
-  @Value("${cf.baseId}")
-  @NotNull
-  private String cfBaseId;
-
-  @Value("${metadata.imageUrl}")
-  @NotNull
-  private String imageUrl;
-
-  public String getCfServiceName() {
-    return cfServiceName;
+  public String getUser() {
+    return user;
   }
 
-  public void setCfServiceName(String cfServiceName) {
-    this.cfServiceName = cfServiceName;
+  public void setUser(String user) {
+    this.user = user;
   }
 
-  public String getCfServiceId() {
-    return cfServiceId;
+  public String getPassword() {
+    return password;
   }
 
-  public void setCfServiceId(String cfServiceId) {
-    this.cfServiceId = cfServiceId;
-  }
-
-  public String getHBaseProvidedZip() {
-    return hbaseProvidedZip;
-  }
-
-  public void setHBaseProvidedZip(String hbaseProvidedParams) {
-    this.hbaseProvidedZip = hbaseProvidedParams;
-  }
-
-  public String getCfBaseId() {
-    return cfBaseId;
-  }
-
-  public void setCfBaseId(String cfBaseId) {
-    this.cfBaseId = cfBaseId;
-  }
-
-  public String getImageUrl() {
-    return imageUrl;
-  }
-
-  public void setImageUrl(String imageUrl) {
-    this.imageUrl = imageUrl;
-  }
-
-  public String getBrokerStorePath() {
-    return brokerStorePath;
-  }
-
-  public void setBrokerStorePath(String brokerStorePath) {
-    this.brokerStorePath = brokerStorePath;
+  public void setPassword(String password) {
+    this.password = password;
   }
 }

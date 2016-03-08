@@ -1,5 +1,6 @@
+---
 security:
-  #password cf client will use when interacting with broker
+#password cf client will use when interacting with broker
   user.password: ${user.password}
 hbase:
   #encoded hadoop configuration files for hbase
@@ -7,13 +8,23 @@ hbase:
 store:
   #optional parameter to configure zookeeper-store
   path: ${broker.store.znode:/broker/hbase/metadata}
+  user: ${system.user}
+  password: ${system.user.password}
 cf:
-  #name of service in cloud foundry catalog
-  servicename: ${cf.catalog.servicename:hbase}
-  #id of service in cloud foundry catalog
-  serviceid: ${cf.catalog.serviceid:hbase}
-  #id of base plan in cloud foundry catalog
-  baseId: ${BASE_GUID:}
-metadata:
-  #encoded image file viewed in marketplace
-  imageUrl: ${IMAGE_URL:}
+  catalog:
+    serviceName: ${cf.catalog.servicename:hbase}
+    serviceId: ${cf.catalog.serviceid:hbase}
+    serviceDescription: HBASE service for creating databases in hadoop distributed data store.
+    baseId: ${BASE_GUID:}
+    plans:
+      - id: bare-plan
+        name: bare
+        description: bare
+        free: true
+      - id: shared-plan
+        name: shared
+        description: shared
+        free: true
+    metadata:
+      imageUrl: ${IMAGE_URL:}
+

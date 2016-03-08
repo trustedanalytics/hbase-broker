@@ -15,6 +15,12 @@
  */
 package org.trustedanalytics.servicebroker.hbase.config;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+
+import javax.security.auth.Subject;
+import javax.security.auth.login.LoginException;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Admin;
@@ -30,12 +36,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.trustedanalytics.hadoop.kerberos.KrbLoginManager;
 import org.trustedanalytics.hadoop.kerberos.KrbLoginManagerFactory;
-import org.trustedanalytics.servicebroker.hbase.config.kerberos.KerberosProperties;
-
-import javax.security.auth.Subject;
-import javax.security.auth.login.LoginException;
-import java.io.IOException;
-import java.net.URISyntaxException;
+import org.trustedanalytics.servicebroker.framework.Profiles;
+import org.trustedanalytics.servicebroker.framework.kerberos.KerberosProperties;
 
 @Profile(Profiles.CLOUD)
 @org.springframework.context.annotation.Configuration
@@ -48,17 +50,17 @@ public class HbaseConfiguration {
   private final static String AUTHENTICATION_METHOD_PROPERTY = "hbase.security.authentication";
 
   @Autowired
-  private KerberosProperties kerberosProperties;
+  private ExternalConfiguration configuration;
 
   @Autowired
-  private ExternalConfiguration configuration;
+  private KerberosProperties kerberosProperties;
 
   @Autowired
   private Configuration hbaseConf;
 
   @Bean(destroyMethod = "close")
-  public Admin getHBaseAdmin() throws InterruptedException,
-      URISyntaxException, LoginException, IOException {
+  public Admin getHBaseAdmin() throws InterruptedException, URISyntaxException, LoginException,
+      IOException {
 
     if (AUTHENTICATION_METHOD.equals(hbaseConf.get(AUTHENTICATION_METHOD_PROPERTY))) {
       LOGGER.info("Creating hbase client with kerberos support");
@@ -69,27 +71,28 @@ public class HbaseConfiguration {
     }
   }
 
-  private Admin getUnsecuredHBaseClient() throws InterruptedException,
-      URISyntaxException, LoginException, IOException {
+  private Admin getUnsecuredHBaseClient() throws InterruptedException, URISyntaxException,
+      LoginException, IOException {
 
     Configuration conf = HBaseConfiguration.create(hbaseConf);
     Connection connection = ConnectionFactory.createConnection(conf);
     return connection.getAdmin();
   }
 
-  private Admin getSecuredHBaseClient() throws InterruptedException,
-      URISyntaxException, LoginException, IOException {
+  private Admin getSecuredHBaseClient() throws InterruptedException, URISyntaxException,
+      LoginException, IOException {
     LOGGER.info("Trying kerberos authentication");
     KrbLoginManager loginManager =
         KrbLoginManagerFactory.getInstance().getKrbLoginManagerInstance(
             kerberosProperties.getKdc(), kerberosProperties.getRealm());
 
     Subject subject =
-        loginManager.loginWithCredentials(kerberosProperties.getUser(), kerberosProperties.getPassword().toCharArray());
+        loginManager.loginWithCredentials(configuration.getUser(), configuration.getPassword()
+            .toCharArray());
     loginManager.loginInHadoop(subject, hbaseConf);
     Configuration conf = HBaseConfiguration.create(hbaseConf);
-    User user = UserProvider.instantiate(conf)
-        .create(UserGroupInformation.getUGIFromSubject(subject));
+    User user =
+        UserProvider.instantiate(conf).create(UserGroupInformation.getUGIFromSubject(subject));
     Connection connection = ConnectionFactory.createConnection(conf, user);
     return connection.getAdmin();
   }

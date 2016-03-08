@@ -13,9 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trustedanalytics.servicebroker.hbase.config;
+package org.trustedanalytics.servicebroker.hbase;
 
-public final class Profiles {
-  public static final String CLOUD = "cloud";
-  public static final String INTEGRATION_TESTS = "integration_tests";
+import com.google.common.hash.Hashing;
+
+public class NamespaceHelper {
+
+  /**
+   * In multitenant env this method will return string composed from organization name and
+   * serviceInstanceId
+   * (at least).
+   *
+   * @param serviceInstanceId
+   * @return
+   */
+  public static String getNamespaceName(String serviceInstanceId) {
+    return Hashing.sha1().hashString(serviceInstanceId).toString();
+  }
 }

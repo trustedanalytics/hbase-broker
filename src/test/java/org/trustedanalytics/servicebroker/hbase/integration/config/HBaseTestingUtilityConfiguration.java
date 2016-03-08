@@ -13,28 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trustedanalytics.servicebroker.hbase.service.integration;
+package org.trustedanalytics.servicebroker.hbase.integration.config;
 
+import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HBaseTestingUtility;
-import org.apache.hadoop.hbase.client.Admin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.trustedanalytics.servicebroker.hbase.config.Profiles;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-@Profile(Profiles.INTEGRATION_TESTS)
 @Configuration
-public class HBaseTestConfiguration {
+public class HBaseTestingUtilityConfiguration {
 
   @Autowired
-  private HBaseTestingUtility utility;
+  private org.apache.hadoop.conf.Configuration hbaseConf;
 
-  @Bean
-  public Admin getHBaseAdmin() throws IOException, InterruptedException, URISyntaxException {
-    return utility.getHBaseAdmin();
+  @Bean(destroyMethod = "shutdownMiniCluster")
+  public HBaseTestingUtility getHBaseTestingUtility() throws Exception {
+    org.apache.hadoop.conf.Configuration configuration = HBaseConfiguration.create(hbaseConf);
+    configuration.set("fs.hdfs.impl",
+        "org.trustedanalytics.servicebroker.hbase.integration.config.FakeFS");
+    HBaseTestingUtility utility = new HBaseTestingUtility(configuration);
+    utility.startMiniCluster();
+    return utility;
   }
 }

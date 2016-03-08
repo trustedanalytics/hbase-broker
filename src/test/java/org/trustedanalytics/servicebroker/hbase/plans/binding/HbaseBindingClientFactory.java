@@ -13,18 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trustedanalytics.servicebroker.hbase.helper;
+package org.trustedanalytics.servicebroker.hbase.plans.binding;
 
-public class LoggerHelper {
+import org.trustedanalytics.servicebroker.framework.Credentials;
 
-  private LoggerHelper() {}
-
-  public static String getParamsAsString(String methodName, Object... params) {
-    StringBuilder builder = new StringBuilder(methodName);
-    builder.append(" : ");
-    for (Object param : params) {
-      builder.append((param == null) ? "NULL" : param.toString()).append(", ");
-    }
-    return builder.toString();
+public final class HbaseBindingClientFactory {
+  public static HbaseSimpleBindingOperations create(Credentials credentials) {
+    return new HbaseBindingClient(credentials);
   }
 }

@@ -15,23 +15,48 @@
  */
 package org.trustedanalytics.servicebroker.hbase.config;
 
-import org.apache.hadoop.conf.Configuration;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.trustedanalytics.cfbroker.config.HadoopZipConfiguration;
+import java.io.IOException;
 
 import javax.security.auth.login.LoginException;
-import java.io.IOException;
+
+import org.apache.hadoop.conf.Configuration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.trustedanalytics.cfbroker.config.HadoopZipConfiguration;
+import org.trustedanalytics.servicebroker.framework.Credentials;
+import org.trustedanalytics.servicebroker.framework.kerberos.KerberosProperties;
+
+import com.google.common.collect.ImmutableMap;
 
 @org.springframework.context.annotation.Configuration
 public class HBaseBrokerConfig {
 
+  @Value("${hbase.provided.zip}")
+  private String hbaseProvidedZip;
+
   @Autowired
-  private ExternalConfiguration configuration;
+  private KerberosProperties kerberosProperties;
 
   @Bean
   public Configuration getHadoopConfiguration() throws LoginException, IOException {
-    return HadoopZipConfiguration.createHadoopZipConfiguration(
-        configuration.getHBaseProvidedZip()).getAsHadoopConfiguration();
+    return HadoopZipConfiguration.createHadoopZipConfiguration(hbaseProvidedZip)
+        .getAsHadoopConfiguration();
+  }
+
+  @Bean
+  public Credentials getCredentials() throws IOException {
+    HadoopZipConfiguration hadoopZipConfiguration =
+        HadoopZipConfiguration.createHadoopZipConfiguration(hbaseProvidedZip);
+
+    ImmutableMap.Builder<String, Object> credentialsBuilder =
+        new ImmutableMap.Builder<String, Object>().putAll(hadoopZipConfiguration
+            .getBrokerCredentials());
+
+    if(kerberosProperties.isKerberosEnabled()) {
+      credentialsBuilder.put("kerberos", kerberosProperties.getCredentials());
+    }
+
+    return new Credentials(credentialsBuilder.build());
   }
 }

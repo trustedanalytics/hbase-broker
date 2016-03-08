@@ -1,13 +1,29 @@
+---
 security:
-  user.password: fake
+#password cf client will use when interacting with broker
+  user.password: ${user.password:fake}
 hbase:
-  brokergroupname: supergroup
+  #encoded hadoop configuration files for hbase
   provided.zip: ${hadoop.provided.zip:}
 store:
-  path: ${broker.store.znode:/broker/hbase}
+  #optional parameter to configure zookeeper-store
+  path: ${broker.store.znode:/broker/hbase/metadata}
+  user: ${system.user:test}
+  password: ${system.user.password:test1}
 cf:
-  servicename: ${cf.catalog.servicename:hbase}
-  serviceid: ${cf.catalog.serviceid:hbase}
-  baseId: ${BASE_GUID:fake}
-metadata:
-  imageUrl: ${IMAGE_URL:}
+  catalog:
+    serviceName: ${cf.catalog.servicename:hbase}
+    serviceId: ${cf.catalog.serviceid:hbase}
+    serviceDescription: HBASE service for creating databases in hadoop distributed data store.
+    baseId: ${BASE_GUID:fake}
+    plans:
+      - id: bare-plan
+        name: bare
+        description: bare
+        free: true
+      - id: shared-plan
+        name: shared
+        description: shared
+        free: true
+    metadata:
+      imageUrl: ${IMAGE_URL:}
