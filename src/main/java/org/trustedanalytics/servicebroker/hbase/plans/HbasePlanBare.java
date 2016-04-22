@@ -36,6 +36,6 @@ class HbasePlanBare implements ServicePlanDefinition {
 
   @Override
   public Map<String, Object> bind(ServiceInstance serviceInstance) throws ServiceBrokerException {
-    return hbaseSimpleBindingOperations.getBareCredentialsMap();
+    return hbaseSimpleBindingOperations.getBareCredentialsMap(serviceInstance.getOrganizationGuid());
   }
 }

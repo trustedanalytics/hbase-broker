@@ -17,6 +17,7 @@ package org.trustedanalytics.servicebroker.hbase.integration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertFalse;
 import static org.trustedanalytics.servicebroker.test.cloudfoundry.CfModelsFactory.*;
 
 import java.util.Optional;
@@ -40,15 +41,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.trustedanalytics.cfbroker.store.api.BrokerStore;
 import org.trustedanalytics.cfbroker.store.api.Location;
-import org.trustedanalytics.cfbroker.store.zookeeper.service.ZookeeperClient;
 import org.trustedanalytics.servicebroker.framework.Qualifiers;
 import org.trustedanalytics.servicebroker.hbase.Application;
-import org.trustedanalytics.servicebroker.hbase.NamespaceHelper;
 import org.trustedanalytics.servicebroker.hbase.integration.config.HBaseTestConfiguration;
 import org.trustedanalytics.servicebroker.hbase.integration.config.HBaseTestingUtilityConfiguration;
 import org.trustedanalytics.servicebroker.hbase.integration.config.ZkLocalConfiguration;
-
-import com.google.common.hash.Hashing;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = {Application.class, ZkLocalConfiguration.class,
@@ -58,13 +55,8 @@ import com.google.common.hash.Hashing;
 @ActiveProfiles("integration-test")
 public class HbaseBrokerTest {
 
-  private static final String NAMESPACE = "hbase.namespace";
-
   @Autowired
   private HBaseTestingUtility utility;
-
-  @Autowired
-  private ZookeeperClient zkClient;
 
   @Autowired
   private ServiceInstanceService instanceService;
@@ -77,18 +69,21 @@ public class HbaseBrokerTest {
   public BrokerStore<CreateServiceInstanceBindingRequest> bindingBrokerStore;
 
   @Test
-  public void testCreateInstance_success_shouldCreateHBaseNamespace() throws Exception {
-    ServiceInstance instance = getServiceInstance("instanceId", "fake-shared-plan");
-    instanceService.createServiceInstance(getCreateInstanceRequest(instance));
+  public void testCreateInstance_success_shouldNotCreateHBaseNamespace() throws Exception {
+    // given
     HBaseAdmin hBaseAdmin = utility.getHBaseAdmin();
-    String createdNSName =
-        hBaseAdmin.getNamespaceDescriptor(NamespaceHelper.getNamespaceName("instanceId")).getName();
-    assertThat(createdNSName, equalTo(Hashing.sha1().hashString("instanceId").toString()));
+    int numberOfNamespacesBeforeServiceCreation = hBaseAdmin.listNamespaceDescriptors().length;
+    // when
+    ServiceInstance instance = getServiceInstance("instanceId", "fake-bare-plan");
+    instanceService.createServiceInstance(getCreateInstanceRequest(instance));
+    // then
+    int numberOfNamespacesAfterServiceCreation = hBaseAdmin.listNamespaceDescriptors().length;
+    assertThat(numberOfNamespacesBeforeServiceCreation, equalTo(numberOfNamespacesAfterServiceCreation));
   }
 
   @Test
   public void testCreateInstance_success_shouldStoreInstanceDataInBrokerStore() throws Exception {
-    ServiceInstance instance = getServiceInstance("instanceId2", "fake-shared-plan");
+    ServiceInstance instance = getServiceInstance("instanceId2", "fake-bare-plan");
     CreateServiceInstanceRequest request = getCreateInstanceRequest(instance);
     instanceService.createServiceInstance(request);
     ServiceInstance serviceInstance = instanceService.getServiceInstance("instanceId2");
@@ -99,7 +94,7 @@ public class HbaseBrokerTest {
   @Test
   public void testCreateInstanceBinding_success_shouldStoreInstanceBindingDataInBrokerStore()
       throws Exception {
-    ServiceInstance instance = getServiceInstance("instanceId3", "fake-shared-plan");
+    ServiceInstance instance = getServiceInstance("instanceId3", "fake-bare-plan");
     instanceService.createServiceInstance(getCreateInstanceRequest(instance));
     CreateServiceInstanceBindingRequest request = getCreateBindingRequest("instanceId3").withBindingId("bindingId2");
     bindingService.createServiceInstanceBinding(request);
@@ -110,17 +105,4 @@ public class HbaseBrokerTest {
     assertThat(bindingInstance.get().getPlanId(), equalTo(request.getPlanId()));
   }
 
-  @Test
-  public void testCreateInstanceBinding_success_shouldReturnHBaseNamespaceNameInCredentials()
-      throws Exception {
-    ServiceInstance instance = getServiceInstance("instanceId4", "fake-shared-plan");
-    instanceService.createServiceInstance(getCreateInstanceRequest(instance));
-    CreateServiceInstanceBindingRequest request =
-        new CreateServiceInstanceBindingRequest(instance
-            .getServiceDefinitionId(), "fake-shared-plan", "appGuid").withBindingId("bindingId")
-            .withServiceInstanceId("instanceId4");
-    ServiceInstanceBinding binding = bindingService.createServiceInstanceBinding(request);
-    String namespaceInCredentials = (String) binding.getCredentials().get(NAMESPACE);
-    assertThat(namespaceInCredentials, equalTo(Hashing.sha1().hashString("instanceId4").toString()));
-  }
 }

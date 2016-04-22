@@ -21,9 +21,5 @@ cf:
         name: bare
         description: bare
         free: true
-      - id: shared-plan
-        name: shared
-        description: shared
-        free: true
     metadata:
       imageUrl: ${IMAGE_URL:}

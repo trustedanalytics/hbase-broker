@@ -75,8 +75,10 @@ public class HbaseConfiguration {
       LoginException, IOException {
 
     Configuration conf = HBaseConfiguration.create(hbaseConf);
-    Connection connection = ConnectionFactory.createConnection(conf);
-    return connection.getAdmin();
+    User user =
+        UserProvider.instantiate(hbaseConf).create(
+            UserGroupInformation.createRemoteUser(configuration.getUser()));
+    return ConnectionFactory.createConnection(conf, user).getAdmin();
   }
 
   private Admin getSecuredHBaseClient() throws InterruptedException, URISyntaxException,

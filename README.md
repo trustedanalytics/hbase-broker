@@ -63,7 +63,7 @@ Use cf client :
 ```
 cf create-service-broker hbase-broker <user> <password> https://hbase-broker.<platform_domain>
 cf enable-service-access hbase
-cf cs hbase shared  hbase-instance
+cf cs hbase bare hbase-instance
 ```
 
 ## Binding broker instance
@@ -101,7 +101,7 @@ and look for :
     },
     "label": "hbase",
     "name": "hbase-instance",
-    "plan": "shared",
+    "plan": "bare",
     "tags": []
    }
   ]

@@ -22,12 +22,9 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.trustedanalytics.servicebroker.framework.Credentials;
-import org.trustedanalytics.servicebroker.hbase.NamespaceHelper;
 
 @Component
 class HbaseBindingClient implements HbaseSimpleBindingOperations {
-
-  private static final String NAMESPACE = "hbase.namespace";
 
   private final Credentials credentials;
 
@@ -37,14 +34,10 @@ class HbaseBindingClient implements HbaseSimpleBindingOperations {
   }
 
   @Override
-  public Map<String, Object> createCredentialsMap(String instanceId) {
+  public Map<String, Object> getBareCredentialsMap(String instanceId) {
     Map<String, Object> credentialsCopy = new HashMap<>(credentials.getCredentialsMap());
-    credentialsCopy.put(NAMESPACE, NamespaceHelper.getNamespaceName(instanceId));
+    credentialsCopy.put("hbase.namespace", instanceId.replace("-", ""));
     return credentialsCopy;
   }
 
-  @Override
-  public Map<String, Object> getBareCredentialsMap() {
-    return credentials.getCredentialsMap();
-  }
 }

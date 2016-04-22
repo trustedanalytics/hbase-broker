@@ -19,6 +19,5 @@ import java.util.Map;
 import java.util.UUID;
 
 public interface HbaseSimpleBindingOperations {
-  Map<String, Object> createCredentialsMap(String instanceId);
-  Map<String, Object> getBareCredentialsMap();
+  Map<String, Object> getBareCredentialsMap(String instanceUUID);
 }
