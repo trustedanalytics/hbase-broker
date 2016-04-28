@@ -16,7 +16,6 @@
 package org.trustedanalytics.servicebroker.hbase.plans.binding;
 
 import java.util.Map;
-import java.util.UUID;
 
 public interface HbaseSimpleBindingOperations {
   Map<String, Object> getBareCredentialsMap(String instanceUUID);

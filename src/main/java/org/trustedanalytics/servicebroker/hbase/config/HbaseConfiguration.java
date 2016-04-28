@@ -43,11 +43,11 @@ import org.trustedanalytics.servicebroker.framework.kerberos.KerberosProperties;
 @org.springframework.context.annotation.Configuration
 public class HbaseConfiguration {
 
-  private final static Logger LOGGER = LoggerFactory.getLogger(HbaseConfiguration.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(HbaseConfiguration.class);
 
-  private final static String AUTHENTICATION_METHOD = "kerberos";
+  private static final String AUTHENTICATION_METHOD = "kerberos";
 
-  private final static String AUTHENTICATION_METHOD_PROPERTY = "hbase.security.authentication";
+  private static final String AUTHENTICATION_METHOD_PROPERTY = "hbase.security.authentication";
 
   @Autowired
   private ExternalConfiguration configuration;

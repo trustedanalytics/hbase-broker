@@ -17,7 +17,6 @@ package org.trustedanalytics.servicebroker.hbase.plans.binding;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
