@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/trustedanalytics/hbase-broker.svg?branch=master)](https://travis-ci.org/trustedanalytics/hbase-broker)
+[![Dependency Status](https://www.versioneye.com/user/projects/572368f4ba37ce00350af72f/badge.svg?style=flat)](https://www.versioneye.com/user/projects/572368f4ba37ce00350af72f)
+
 hbase-broker
 ================
 Cloud foundry broker for HBase.
